@@ -9,12 +9,15 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { places as MyMockPlaces } from "../../utils/mock";
 import DatePicker from "react-datepicker";
 import { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { Places, Reservation } from "../types";
-import { daysDifference } from "../../utils/formatDate";
+import {
+  daysDifference,
+  excludeDateIntervals,
+  overlapingeExcludeDate,
+} from "../../utils/formatDate";
 import { BookingStatus } from "../enum";
 import { useBookingContext } from "../../context/BookingContext";
 
@@ -46,6 +49,13 @@ const BookingModal = ({
   const [pets, setPets] = useState(0);
   const [notes, setNotes] = useState("");
 
+  const isBtnDisable = overlapingeExcludeDate(
+    placeSelected?.excludeDates,
+    reservation,
+    startDate,
+    endDate
+  );
+
   const price: number =
     (placeSelected && nights * placeSelected?.dailyPrice) || 0;
 
@@ -63,6 +73,7 @@ const BookingModal = ({
       setPlaceSelected(place);
     }
   };
+
   const setUpDialogInformation = () => {
     switch (bookingStatus) {
       case BookingStatus.EDIT:
@@ -73,7 +84,9 @@ const BookingModal = ({
             <Button onClick={() => reservation && deleteBooking(reservation)}>
               Delete
             </Button>
-            <Button type="submit">Edit</Button>
+            <Button disabled={isBtnDisable} type="submit">
+              Edit
+            </Button>
           </>
         );
 
@@ -83,7 +96,9 @@ const BookingModal = ({
         DialogActionContainer = (
           <>
             <Button onClick={onClose}>Cancel</Button>
-            <Button type="submit">Confirm</Button>
+            <Button disabled={isBtnDisable} type="submit">
+              Confirm
+            </Button>
           </>
         );
         break;
@@ -146,7 +161,7 @@ const BookingModal = ({
 
   const handleDateChange = (date: Date | null, type: "start" | "end") => {
     if (type === "start") {
-      setStartDate((prev) => {
+      setStartDate(() => {
         if (date && endDate) {
           setNights(daysDifference(date, endDate));
         }
@@ -154,7 +169,7 @@ const BookingModal = ({
       });
       setEndDate(null);
     } else if (type === "end" && startDate) {
-      setEndDate((prev) => {
+      setEndDate(() => {
         if (startDate && date) {
           setNights(daysDifference(startDate, date));
         }
@@ -209,7 +224,10 @@ const BookingModal = ({
             autoComplete="off"
             onChange={(date) => handleDateChange(date, "start")}
             selectsStart
-            excludeDates={placeSelected?.excludeDates}
+            excludeDateIntervals={excludeDateIntervals(
+              placeSelected?.excludeDates,
+              reservation
+            )}
             minDate={new Date()}
             startDate={startDate}
             endDate={endDate}
@@ -228,14 +246,24 @@ const BookingModal = ({
             autoComplete="off"
             required
             disabled={!startDate}
-            excludeDates={startDate ? [startDate, ...(placeSelected?.excludeDates || [])] : placeSelected?.excludeDates || []}
+            excludeDateIntervals={excludeDateIntervals(
+              placeSelected?.excludeDates,
+              reservation
+            )}
+            excludeDates={startDate ? [startDate] : []}
             onChange={(date) => handleDateChange(date, "end")}
             selectsEnd
             startDate={startDate}
             endDate={endDate}
             minDate={startDate}
             customInput={
-              <TextField className="w-full" id="outlined-required" label="to" />
+              <TextField
+                error={isBtnDisable}
+                helperText={isBtnDisable ? "Incorrect entry." : ""}
+                className="w-full"
+                id="outlined-required"
+                label="to"
+              />
             }
           />
         </div>
@@ -293,10 +321,10 @@ const BookingModal = ({
           }}
         />
         <div className="flex flex-col divide-y">
-          <Typography variant="subtitle2" component="span">
+          <Typography variant="h6" component="span">
             Rent: {nights} nights • daily price ${placeSelected?.dailyPrice}
           </Typography>
-          <Typography variant="subtitle1" component="span">
+          <Typography variant="h5" component="span">
             Total: ${price}
           </Typography>
         </div>

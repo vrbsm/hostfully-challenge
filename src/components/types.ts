@@ -16,6 +16,10 @@ export interface Places {
   id: number;
   name: string;
   dailyPrice: number;
-  excludeDates: Date[];
+  excludeDates: {
+    id: string;
+    start: Date;
+    end: Date;
+  }[];
   img: string;
 }

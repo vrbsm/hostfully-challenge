@@ -3,7 +3,7 @@ import { Places } from "../components/types";
 export const places: Places[] = [
   {
     id: 1,
-    excludeDates: [new Date(2024, 1, 12), new Date(2024, 1, 13), new Date(2024, 1, 14), new Date(2024, 1, 15)],
+    excludeDates: [{ start: new Date(2024, 1, 12), end: new Date(2024, 1, 15), id: 'q2' }],
     name: "Santos",
     dailyPrice: 150,
     img: "https://images.trvl-media.com/lodging/20000000/19860000/19858700/19858690/6f09a7d8.jpg?impolicy=resizecrop&rw=455&ra=fit",

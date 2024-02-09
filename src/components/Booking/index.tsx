@@ -19,7 +19,7 @@ const Booking = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [showNotification, setShowNotification] = useState(false);
-  const { reservations, addReservation, updateReservation, deleteReservation } = useBookingContext();
+  const { reservations, addReservation, updateReservation, deleteReservation, places } = useBookingContext();
   const [modalStatus, setModalStatus] = useState(BookingStatus.CREATE);
   const [selectedReservation, setSelectedReservation] =
     useState<Reservation | null>(null);
@@ -51,7 +51,7 @@ const Booking = () => {
   };
 
   const handleDeleteBooking = (item: Reservation) => {
-    deleteReservation(item.id);
+    deleteReservation(item);
     setNotificationMessage(NotificationMessage.DELETE);
     setShowNotification(true);
     handleCloseModal();

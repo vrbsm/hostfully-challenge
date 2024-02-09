@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import { Places, Reservation } from "../components/types";
-import { places as placesMocked} from "../utils/mock";
+import { places as placesMocked } from "../utils/mock";
 
 interface BookingContextProviderProps {
   children: React.ReactNode;
@@ -8,10 +8,9 @@ interface BookingContextProviderProps {
 interface BookingContextProps {
   reservations: Reservation[] | null;
   places: Places[] | null;
-  addExcludeDates: (dates: Date[]) => void
   addReservation: (item: Reservation) => void;
   updateReservation: (item: Reservation) => void;
-  deleteReservation: (item: string) => void;
+  deleteReservation: (item: Reservation) => void;
 }
 const defaultValue = {
   reservations: null,
@@ -19,7 +18,7 @@ const defaultValue = {
   updateReservation: () => {},
   deleteReservation: () => {},
   addExcludeDates: () => {},
-  places: null
+  places: null,
 };
 
 export const BookingContext = createContext<BookingContextProps>(defaultValue);
@@ -28,11 +27,11 @@ export const BookingContextProvider = ({
   children,
 }: BookingContextProviderProps) => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [places,] = useState<Places[]>(placesMocked);
+  const [places, setPlaces] = useState<Places[]>(placesMocked);
 
   const addReservation = (item: Reservation) => {
     setReservations((prev) => [...prev, item]);
-    // addExcludeDates(item.from)
+    addExcludeDates(item);
   };
 
   const updateReservation = (item: Reservation) => {
@@ -41,15 +40,49 @@ export const BookingContextProvider = ({
         item.id === reservation.id ? item : reservation
       )
     );
+    removingExcludeDates(item);
+    addExcludeDates(item);
   };
 
-  const deleteReservation = (id: string) => {
-    setReservations((prev) => prev.filter((item) => item.id !== id))
-  }
+  const deleteReservation = (reservation: Reservation) => {
+    setReservations((prev) =>
+      prev.filter((item) => item.id !== reservation.id)
+    );
+    removingExcludeDates(reservation);
+  };
 
-  const addExcludeDates = (dates: Date[]) => {
+  const addExcludeDates = (reservation: Reservation) => {
+    const { from, to } = reservation;
+    if (!from || !to) return;
+    setPlaces((prev) =>
+      prev.map((place) => {
+        if (place.id === reservation.reservationId) {
+          const excludeDates = [
+            ...place.excludeDates,
+            { start: from, end: to, id: reservation.id },
+          ];
+          const customPlace = { ...place, excludeDates };
+          return customPlace;
+        }
+        return place;
+      })
+    );
+  };
 
-  }
+  const removingExcludeDates = (reservation: Reservation) => {
+    setPlaces((prev) =>
+      prev.map((place) => {
+        if (place.id === reservation.reservationId) {
+          const newExcludeDates = place.excludeDates.filter(
+            (item) => item.id !== reservation.id
+          );
+          return { ...place, excludeDates: newExcludeDates };
+        }
+
+        return place;
+      })
+    );
+  };
 
   return (
     <BookingContext.Provider
@@ -57,9 +90,8 @@ export const BookingContextProvider = ({
         reservations,
         places,
         addReservation,
-        addExcludeDates,
         updateReservation,
-        deleteReservation
+        deleteReservation,
       }}
     >
       {children}
