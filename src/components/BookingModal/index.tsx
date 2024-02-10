@@ -16,7 +16,7 @@ import { Places, Reservation } from "../types";
 import {
   daysDifference,
   excludeDateIntervals,
-  overlapingeExcludeDate,
+  overlappingExcludeDate,
 } from "../../utils/formatDate";
 import { BookingStatus } from "../enum";
 import { useBookingContext } from "../../context/BookingContext";
@@ -49,7 +49,7 @@ const BookingModal = ({
   const [pets, setPets] = useState(0);
   const [notes, setNotes] = useState("");
 
-  const isBtnDisable = overlapingeExcludeDate(
+  const isBtnDisable = overlappingExcludeDate(
     placeSelected?.excludeDates,
     reservation,
     startDate,
@@ -80,11 +80,11 @@ const BookingModal = ({
         title = "Edit booking";
         DialogActionContainer = (
           <>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button onClick={() => reservation && deleteBooking(reservation)}>
+            <Button data-testid="cancel-button" onClick={onClose}>Cancel</Button>
+            <Button data-testid="delete-button" onClick={() => reservation && deleteBooking(reservation)}>
               Delete
             </Button>
-            <Button disabled={isBtnDisable} type="submit">
+            <Button data-testid="edit-button" disabled={isBtnDisable} type="submit">
               Edit
             </Button>
           </>
@@ -95,7 +95,7 @@ const BookingModal = ({
         title = "+ booking";
         DialogActionContainer = (
           <>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button data-testid="cancel-button" onClick={onClose}>Cancel</Button>
             <Button disabled={isBtnDisable} type="submit">
               Confirm
             </Button>
@@ -202,9 +202,9 @@ const BookingModal = ({
           />
         </div>
         <TextField
+          select
           className="w-full"
           required
-          select
           value={placeSelected?.id || ""}
           label="Name"
           name="name"
@@ -235,7 +235,7 @@ const BookingModal = ({
               <TextField
                 className="w-full"
                 required
-                id="outlined-required"
+                id="from-required"
                 label="from"
               />
             }
@@ -261,7 +261,7 @@ const BookingModal = ({
                 error={isBtnDisable}
                 helperText={isBtnDisable ? "Incorrect entry." : ""}
                 className="w-full"
-                id="outlined-required"
+                id="to-required"
                 label="to"
               />
             }
@@ -271,7 +271,6 @@ const BookingModal = ({
           <TextField
             InputProps={{ inputProps: { min: 1 } }}
             className="w-full"
-            id="outlined-number"
             label="Adults"
             value={adults}
             onChange={(event) => setAdults(Number(event.target.value))}
@@ -284,7 +283,6 @@ const BookingModal = ({
           <TextField
             InputProps={{ inputProps: { min: 0 } }}
             className="w-full"
-            id="outlined-number"
             name="children"
             value={children}
             onChange={(event) => setChildren(Number(event.target.value))}
@@ -297,7 +295,6 @@ const BookingModal = ({
           <TextField
             InputProps={{ inputProps: { min: 0 } }}
             className="w-full"
-            id="outlined-number"
             label="Pets"
             value={pets}
             onChange={(event) => setPets(Number(event.target.value))}
@@ -311,7 +308,6 @@ const BookingModal = ({
         <TextField
           InputProps={{ inputProps: { min: 0 } }}
           className="w-full"
-          id="outlined-number"
           label="Notes"
           value={notes}
           onChange={(event) => setNotes(event.target.value)}

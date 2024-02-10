@@ -1,10 +1,13 @@
 import { InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-
-const Search = () => {
+interface SearchProps {
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+const Search = ({ onChange }: SearchProps) => {
   return (
     <TextField
-    className="sm:w-[70%]"
+      className="sm:w-[70%]"
+      onChange={onChange}
       id="input-with-icon-textfield"
       InputProps={{
         sx: { borderRadius: 10 },

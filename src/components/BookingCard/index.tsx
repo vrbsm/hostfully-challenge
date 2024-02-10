@@ -39,7 +39,7 @@ const BookingCard = ({ reservation, onClickItem }: BookingCardProps) => {
 
   return (
     <section className="pb-5">
-      <Card className="cursor-pointer" onClick={() => onClickItem(reservation)}>
+      <Card data-testid="card-item-container" className="cursor-pointer" onClick={() => onClickItem(reservation)}>
         <div className="w-full flex flex-col lg:flex-row">
           <CardMedia
             className="lg:max-w-[200px]"
@@ -53,7 +53,7 @@ const BookingCard = ({ reservation, onClickItem }: BookingCardProps) => {
               <Typography variant="subtitle1" component="span">
                 {name}
               </Typography>
-              <Typography variant="subtitle2" component="span">
+              <Typography variant="subtitle2" component="span" data-testid="family-members-container">
                 <span className="rounded-full px-2 py-1 bg-blue-500 text-white">
                   {adults}
                 </span>{" "}

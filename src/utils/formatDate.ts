@@ -20,7 +20,7 @@ export const excludeDateIntervals = (
   return excludeDates.filter((item) => item.id !== reservation?.id) || [];
 };
 
-export const overlapingeExcludeDate = (
+export const overlappingExcludeDate = (
   excludeDates: ExcludeDates[] | undefined | null,
   reservation: Reservation | undefined | null,
   startDate: Date | null,
