@@ -112,7 +112,7 @@ const Booking = () => {
             </Typography>
           </div>
         ) : (
-          <ul className="pt-3">
+          <ul id="list-booking" className="pt-3">
             {filteredReservation?.map((item) => (
               <li key={item.id}>
                 <BookingCard reservation={item} onClickItem={handleItemClick} />

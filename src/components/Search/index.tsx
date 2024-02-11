@@ -8,7 +8,7 @@ const Search = ({ onChange }: SearchProps) => {
     <TextField
       className="sm:w-[70%]"
       onChange={onChange}
-      id="input-with-icon-textfield"
+      id="input-search"
       InputProps={{
         sx: { borderRadius: 10 },
         endAdornment: (
